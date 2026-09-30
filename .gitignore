@@ -1,0 +1,17 @@
+# Prompts & Templates (kept local)
+PROMPT.md
+profile-README-template.md
+AVIVASHISHTA29-main/
+scripts/requirements-local.txt
+
+# Local preview HTMLs & scratch files
+preview_*.html
+scratch_*
+assets/avi-ascii-static.svg
+assets/info-card.svg
+source-prepped.png
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.env

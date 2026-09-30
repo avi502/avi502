@@ -1,0 +1,41 @@
+name: Update profile art
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # 02:00 UTC daily
+  workflow_dispatch:        # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-graph:
+    runs-on: ubuntu-latest
+    env:
+      GH_PROFILE_USER: avi502
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install scraper deps
+        run: pip install -r scripts/requirements.txt
+
+      - name: Fetch contributions
+        run: python scripts/fetch_contributions.py
+
+      - name: Render heatmap SVG
+        run: python scripts/generate_streak_svg.py $GH_PROFILE_USER assets/contrib-heatmap.svg
+
+      - name: Commit and push (if changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/contrib-heatmap.svg data/contributions.json
+          git diff --cached --quiet || git commit -m "chore: refresh contribution graph [skip ci]"
+          git push
